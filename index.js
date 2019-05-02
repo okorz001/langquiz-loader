@@ -9,8 +9,14 @@ const sha1 = require('sha1')
 const CACHE_DIR = 'out'
 
 const COURSE_IDS = [
-    'DUOLINGO_VI_EN',
     'DUOLINGO_EN_VI',
+    'DUOLINGO_VI_EN',
+
+    'DUOLINGO_EN_ES',
+    'DUOLINGO_ES_EN',
+
+    'DUOLINGO_EN_FR',
+    'DUOLINGO_FR_EN',
 ]
 
 async function main() {
