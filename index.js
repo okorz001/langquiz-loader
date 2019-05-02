@@ -75,6 +75,13 @@ class Loader {
         const allCourses = await this.getCourses()
         const courses = allCourses.filter(it => courseIds.includes(it.id))
 
+        // write some basic course info
+        const basicCourses = courses.map(it => ({
+            learning: it.learningLanguage.id,
+            from: it.fromLanguage.id,
+        }))
+        await this.writeCourses(basicCourses)
+
         // assumes at least one course is learning English
         const languages = courses.map(it => it.learningLanguage)
         await this.writeLanguages(languages)
@@ -147,6 +154,22 @@ class Loader {
         const hash = sha1(JSON.stringify(words))
         return await cache(`translate/${courseId}/${hash}.json`,
                            () => this.duolingo.translate(courseId, words))
+    }
+
+    async writeCourses(courses) {
+        const col = this.mongo.db('langquiz').collection('courses')
+        const ops = courses.map(course => ({
+            replaceOne: {
+                filter: {
+                    // this tuple uniquely identifies document
+                    learning: course.learning,
+                    from: course.from,
+                },
+                replacement: course,
+                upsert: true,
+            },
+        }))
+        return this.write(col, ops)
     }
 
     async writeLanguages(languages) {
